@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我们的团队 - Our index</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --accent-cyan: #00f2fe;
+      --accent-violet: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: rgba(248, 250, 252, 0.7);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 60px 0; 
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* 将容器宽度放大，让平铺的比例更协调 */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    
+    h1 { 
+      text-align: center; font-size: 3.5rem; font-weight: 700; margin-bottom: 12px; 
+      background: linear-gradient(135deg, #fff, #94a3b8); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+      letter-spacing: -0.02em;
+    }
+    .subtitle { text-align: center; font-size: 1.25rem; color: var(--text-muted); margin-bottom: 70px; font-weight: 400;}
+
+    .index-grid {
+      display: grid;
+      /* 强制 4 列等宽平铺 */
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 120px;
+    }
+
+    @media (max-width: 1024px) {
+      .index-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .index-grid { grid-template-columns: 1fr; }
+    }
+
+    .member-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      /* 调整内边距使其更修长优美 */
+      padding: 45px 20px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .member-card-link { text-decoration: none; color: inherit; display: block; height: 100%; }
+    
+    .member-card:hover { 
+      transform: translateY(-8px) scale(1.02); 
+      background: rgba(255, 255, 255, 0.05); 
+      border-color: var(--accent-cyan); 
+      box-shadow: 0 15px 35px -5px rgba(0, 242, 254, 0.15);
+    }
+
+    .member-card-link:nth-child(4) .member-card:hover {
+      border-color: var(--accent-violet);
+      box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.15);
+    }
+
+    .avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.2), 0 0 20px rgba(0, 242, 254, 0.4);
+      transition: all 0.3s ease;
+    }
+    .member-card-link:nth-child(4) .avatar {
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2), 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .member-card:hover .avatar { box-shadow: 0 0 0 6px rgba(0, 242, 254, 0.3), 0 0 30px rgba(0, 242, 254, 0.6); }
+    .member-card-link:nth-child(4) .member-card:hover .avatar { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.3), 0 0 30px rgba(139, 92, 246, 0.6); }
+
+    .name { font-size: 1.4rem; margin-bottom: 6px; font-weight: 600; color: #fff; }
+    .position { color: var(--accent-cyan); margin-bottom: 16px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;}
+    .member-card-link:nth-child(4) .position { color: var(--accent-violet); }
+    .desc { color: var(--text-muted); line-height: 1.5; font-size: 0.9rem; font-weight: 400;}
+
+    .section-title { text-align: center; font-size: 2.2rem; margin-bottom: 50px; font-weight: 700; }
+    
+    .strengths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 120px; }
+    @media (max-width: 860px) { .strengths-grid { grid-template-columns: 1fr; } }
+    
+    .strength-item { 
+      padding: 40px 30px; 
+      background: var(--glass-bg); 
+      border-radius: 24px; 
+      text-align: center; 
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .strength-item:hover {
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px -10px rgba(255,255,255,0.1);
+    }
+
+    .strength-item::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .strength-item:hover::before { opacity: 1; }
+
+    .icon-wrapper {
+      width: 60px; height: 60px;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent-cyan);
+    }
+
+    .strength-item h3 { margin-bottom: 12px; color: #fff; font-size: 1.25rem; font-weight: 600; }
+    .strength-item p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;}
+
+    .roadmap { position: relative; padding: 20px 0; margin-bottom: 120px; }
+    .roadmap-list { display: flex; justify-content: space-between; border-top: 2px solid rgba(255, 255, 255, 0.1); padding-top: 40px; }
+    
+    @media (max-width: 768px) {
+      .roadmap-list { flex-direction: column; gap: 50px; border-top: none; border-left: 2px solid rgba(255, 255, 255, 0.1); padding-top: 0; padding-left: 40px; }
+      .roadmap-step::before { top: 0 !important; left: -46px !important; }
+      .roadmap-step { text-align: left !important; }
+    }
+
+    .roadmap-step { flex: 1; text-align: center; position: relative; }
+    .roadmap-step::before { 
+      content: ''; position: absolute; top: -47px; left: 50%; transform: translateX(-50%); 
+      width: 12px; height: 12px; background: #64748b; border-radius: 50%; 
+      border: 4px solid var(--bg-dark);
+      transition: all 0.3s ease;
+    }
+    
+    .roadmap-step.active::before {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.7);
+      animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+
+    @keyframes pulse {
+      to { box-shadow: 0 0 0 20px rgba(0, 242, 254, 0); }
+    }
+
+    .date { color: #fff; font-weight: 700; font-size: 1rem; margin-bottom: 8px; letter-spacing: 1px;}
+    .roadmap-step.active .date { color: var(--accent-cyan); }
+    .event { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; padding: 0 10px; }
+    @media (max-width: 768px) { .event { padding: 0; } }
+
+    footer { border-top: 1px solid var(--glass-border); padding-top: 50px; text-align: center; padding-bottom: 60px; }
+    .contact-info { display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin-bottom: 30px; }
+    .contact-link { 
+      color: var(--text-muted); text-decoration: none; font-size: 0.95rem; 
+      transition: 0.3s; display: flex; align-items: center; gap: 8px;
+    }
+    .contact-link:hover { color: var(--text-main); }
+    .copyright { font-size: 0.85rem; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>我们的团队</h1>
+    <p class="subtitle">Meet the visionaries driving our innovation</p>
+
+    <div class="index-grid">
+      <a href="member1.html?id=1" class="member-card-link">
+        <div class="member-card">
+          <img src="1.webp" alt="刘晓波" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=刘晓波&background=0D8ABC&color=fff&size=150'">
+          <div class="name">刘晓波</div>
+          <div class="position">Technical Lead</div>
+          <div class="desc">深耕机器人开发领域和数字编程领域，负责核心算法实现。</div>
+        </div>
+      </a>
+
+      <a href="member2.html" class="member-card-link">
+        <div class="member-card">
+          <img src="2.webp" alt="王雨荨" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=王雨荨&background=0D8ABC&color=fff&size=150'">
+          <div class="name">王雨荨</div>
+          <div class="position">Curator & Researcher</div>
+          <div class="desc">长期深耕于博物馆学理论与遗产研究，提供深厚的文化背景支持。</div>
+        </div>
+      </a>
+
+      <a href="member3.html" class="member-card-link">
+        <div class="member-card">
+          <img src="3.webp" alt="王鱼雅" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=王鱼雅&background=0D8ABC&color=fff&size=150'">
+          <div class="name">王鱼雅</div>
+          <div class="position">Design Manager</div>
+          <div class="desc">熟练掌握专业设计软件，负责产品的工业设计与交互体验优化。</div>
+        </div>
+      </a>
+
+      <a href="member4.html" class="member-card-link">
+        <div class="member-card">
+          <img src="4.webp" alt="xxx" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=XXX&background=8b5cf6&color=fff&size=150'">
+          <div class="name">待定精英</div>
+          <div class="position">Strategy Director</div>
+          <div class="desc">预留描述文字占位符，展示其在团队资源整合与战略规划中的核心作用。</div>
+        </div>
+      </a>
+    </div>
+
+    <h2 class="section-title">核心优势 / Core Strengths</h2>
+    <div class="strengths-grid">
+      <div class="strength-item">
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        </div>
+        <h3>技术与艺术的共生演化</h3>
+        <p>结合前沿科技、文化遗产与视觉设计，打破边界，创造颠覆性的数字感官体验。</p>
+      </div>
+      <div class="strength-item">
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        </div>
+        <h3>深耕垂直领域的科研积淀</h3>
+        <p>团队成员在各自专业维度拥有扎实的理论储备与极为丰富的实战落地经验。</p>
+      </div>
+      <div class="strength-item">
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        </div>
+        <h3>全球化语境下的审美导向</h3>
+        <p>致力于以数字手段重塑文化价值，高度契合国际顶尖赛事的审美与设计风向。</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">团队历程 / Our Journey</h2>
+    <div class="roadmap">
+      <div class="roadmap-list">
+        <div class="roadmap-step">
+          <div class="date">2026.01</div>
+          <div class="event">核心成员碰头，确立跨学科方向</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="date">2026.03</div>
+          <div class="event">完成团队组建，明确分工与目标</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="date">2026.04</div>
+          <div class="event">完成前期调研与核心技术储备</div>
+        </div>
+        <div class="roadmap-step active">
+          <div class="date">NOW</div>
+          <div class="event">整装待发，准备开启新的探索边界</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="contact-info">
+        <a href="mailto:labyrinthbobo@gmail.com" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          labyrinthbobo@gmail.com
+        </a>
+        <span class="contact-link" style="cursor: default;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Nanjing, China
+        </span>
+        <a href="#" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          www.xxx.com
+        </a>
+      </div>
+      <p class="copyright">© 2026 团队名称. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>

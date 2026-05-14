@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目实例展示 - View Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --accent-cyan: #00f2fe;
+      --text-main: #f8fafc;
+      --text-muted: rgba(248, 250, 252, 0.7);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container { width: 100%; max-width: 1080px; }
+
+    .top-nav { margin-bottom: 30px; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .back-btn:hover { 
+      color: var(--text-main); 
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+      transform: translateX(-5px); 
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    /* 画廊主容器 */
+    .demo-gallery {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .main-image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      margin-bottom: 24px; /* 加大与底部的间距 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s ease;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    .nav-arrow:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+      border-color: transparent;
+    }
+    .nav-prev { left: 20px; }
+    .nav-next { right: 20px; }
+
+    .thumbnails {
+      display: flex;
+      justify-content: center; /* 缩略图居中 */
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    
+    .thumbnails::-webkit-scrollbar { height: 6px; }
+    .thumbnails::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+    .thumbnails::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+
+    .thumb {
+      width: 120px;
+      height: 68px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      opacity: 0.5;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    .thumb:hover { opacity: 0.8; }
+    .thumb.active {
+      opacity: 1;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .page-title { font-size: 1.8rem; }
+      .nav-arrow { width: 36px; height: 36px; }
+      .thumb { width: 90px; height: 50px; }
+      .demo-gallery { padding: 16px; }
+      .thumbnails { justify-content: flex-start; } /* 移动端靠左以支持横滑 */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="member1.html" class="back-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        返回项目
+      </a>
+    </div>
+
+    <h1 class="page-title" id="pageTitle">项目实例展示</h1>
+
+    <main class="demo-gallery">
+      
+      <div class="main-image-wrapper">
+        <button class="nav-arrow nav-prev" onclick="changeImage(-1)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        
+        <img src="" alt="Project Demo Image" class="main-image" id="mainImage">
+        
+        <button class="nav-arrow nav-next" onclick="changeImage(1)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="thumbnails" id="thumbnailContainer">
+        </div>
+
+    </main>
+  </div>
+
+  <script>
+    // 定义 3 个项目的图片数据字典 (替换为您自己的真实图片路径)
+    const projectData = {
+      "A": {
+        title: "Unitree Go2 Air 实例展示",
+        images: [
+          "view1_1.webp",
+          "https://placehold.co/1200x675/1e293b/8b5cf6?text=Unitree+Go2+-+Image+02",
+          "https://placehold.co/1200x675/1e293b/10b981?text=Unitree+Go2+-+Image+03"
+        ]
+      },
+      "B": {
+        title: "51单片机小车 实例展示",
+        images: [
+          "view2_1.webp",
+          "view2_2.webp",
+          "view2_3.webp"
+        ]
+      },
+      "C": {
+        title: "Robo-Soul 马达机器人 实例展示",
+        images: [
+          "view3_1.webp",
+          "view3_2.webp",
+          "view3_3.webp"
+        ]
+      }
+    };
+
+    // 获取 URL 中的 ?demo= 参数
+    const params = new URLSearchParams(window.location.search);
+    const demoKey = params.get('demo') || 'A'; // 如果没参数，默认加载项目 A
+    
+    // 获取当前项目数据
+    const currentProject = projectData[demoKey] || projectData['A'];
+    const currentImages = currentProject.images;
+
+    let currentIndex = 0;
+    const mainImage = document.getElementById('mainImage');
+    const pageTitle = document.getElementById('pageTitle');
+    const thumbnailContainer = document.getElementById('thumbnailContainer');
+
+    function initGallery() {
+      // 1. 设置页面标题
+      pageTitle.textContent = currentProject.title;
+      
+      // 2. 生成对应项目的缩略图
+      currentImages.forEach((src, index) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = `thumb ${index === 0 ? 'active' : ''}`;
+        img.onclick = () => goToImage(index);
+        thumbnailContainer.appendChild(img);
+      });
+      
+      // 3. 渲染主图
+      updateView();
+    }
+
+    function updateView() {
+      mainImage.style.opacity = 0.4;
+      
+      setTimeout(() => {
+        mainImage.src = currentImages[currentIndex];
+        
+        document.querySelectorAll('.thumb').forEach((thumb, idx) => {
+          thumb.classList.toggle('active', idx === currentIndex);
+        });
+
+        mainImage.style.opacity = 1;
+      }, 200);
+    }
+
+    function changeImage(step) {
+      currentIndex = (currentIndex + step + currentImages.length) % currentImages.length;
+      updateView();
+    }
+
+    function goToImage(index) {
+      if (currentIndex === index) return;
+      currentIndex = index;
+      updateView();
+    }
+
+    window.onload = initGallery;
+  </script>
+</body>
+</html>

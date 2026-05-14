@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成员详情 - 刘晓波 | Technical Lead</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --accent-cyan: #00f2fe;
+      --accent-violet: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: rgba(248, 250, 252, 0.7);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 60px 0;
+      line-height: 1.6;
+    }
+
+    /* 噪点质感 */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container { max-width: 1080px; margin: 0 auto; }
+
+    /* 高级返回按钮 */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      margin-bottom: 50px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .back-btn:hover { 
+      color: var(--text-main); 
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+      transform: translateX(-5px); 
+    }
+
+    /* ================= 顶部个人简介区 ================= */
+    .profile-header {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-bottom: 90px;
+    }
+    
+    .avatar-wrapper { 
+      position: relative; 
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* 圆形头像与青色霓虹发光 (cyan neon glow) */
+    .avatar-big {
+      width: 100%;
+      max-width: 240px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+      box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4); }
+      50% { transform: translateY(-10px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.25), 0 0 40px rgba(0, 242, 254, 0.6); }
+      100% { transform: translateY(0px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4); }
+    }
+
+    .info h1 { font-size: 3.2rem; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.02em; }
+    .position-tag {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .bio { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 30px; max-width: 90%; }
+
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-pill {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      transition: 0.3s;
+    }
+    .skill-pill:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    /* ================= 成果展示区 (Glassmorphism & Dual Buttons) ================= */
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
+    }
+
+    .achievements-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .achievement-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 35px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .achievement-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+      transform: translateY(-3px);
+    }
+
+    .ach-content { flex: 1; padding-right: 40px; }
+    .ach-content h3 { color: #fff; margin-bottom: 10px; font-size: 1.35rem; font-weight: 600; }
+    .ach-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+    /* 双按钮布局 */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    /* 主按钮：渐变青色 + 演示图标 */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), rgba(0, 242, 254, 0.7));
+      color: var(--bg-dark);
+      border: none;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+      transform: translateY(-2px);
+      color: #000;
+    }
+
+    /* 次按钮：幽灵白色描边 + 文档图标 */
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .btn svg { width: 18px; height: 18px; }
+
+    /* 响应式调整 */
+    @media (max-width: 860px) {
+      .profile-header { grid-template-columns: 1fr; text-align: center; gap: 40px; margin-bottom: 60px;}
+      .bio { margin: 0 auto 30px; }
+      .skills-wrap { justify-content: center; }
+      .achievement-card { flex-direction: column; text-align: left; gap: 24px; padding: 30px; align-items: flex-start;}
+      .ach-content { padding-right: 0; }
+      .action-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+      .btn { justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .action-buttons { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      返回团队
+    </a>
+
+    <section class="profile-header">
+      <div class="avatar-wrapper">
+        <img id="avatar" src="1.webp" alt="刘晓波" class="avatar-big" onerror="this.src='https://ui-avatars.com/api/?name=刘晓波&background=00f2fe&color=121212&size=300'">
+      </div>
+      
+      <div class="info">
+        <div id="position" class="position-tag">Technical Lead</div>
+        <h1 id="name">刘晓波</h1>
+        <p id="desc" class="bio">精通 Python、C++、Java 等编程语言，深耕机器人开发与数字编程领域。致力于将尖端硬件与智能算法结合，实现工业级自动化解决方案与卓越的数字交互体验。</p >
+        
+        <div class="skills-wrap" id="skills">
+          <span class="skill-pill">Python / C++</span>
+          <span class="skill-pill">Embedded Systems</span>
+          <span class="skill-pill">Robotics SDK</span>
+          <span class="skill-pill">OpenCV</span>
+          <span class="skill-pill">Algorithm Design</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="section">
+      <h2 class="section-title">核心成果展示 / Major Achievements</h2>
+      
+      <div class="achievements-list">
+        <div class="achievement-card">
+          <div class="ach-content">
+            <h3>Unitree Go2 Air 二次开发项目</h3>
+            <p>将入门级 Air 版本成功升级为 Edu 教育版，实现了底层接口的全面调用、雷达避障优化与功能扩展，大幅提升了机器人的现场部署能力。</p >
+          </div>
+          <div class="action-buttons">
+            <a href="view_demo1.html?demo=A" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              View Demo
+            </a>
+            <a href="load_pdf1.html?pdf=reportA" class="btn btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Read PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="achievement-card">
+          <div class="ach-content">
+            <h3>51单片机小车系统架构</h3>
+            <p>基于 51 内核的自主导引小车，独立完成了传感器选型到红外循迹与超声波避障算法编写的全流程硬件开发。</p >
+          </div>
+          <div class="action-buttons">
+            <a href="view_demo1.html?demo=B" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              View Demo
+            </a>
+            <a href="load_pdf1.html?pdf=reportB" class="btn btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Read PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="achievement-card">
+          <div class="ach-content">
+            <h3>Robo-Soul 伺服舵机机器人落地</h3>
+            <p>针对复杂地形开发的足式机器人伺服舵机控制系统，运用运动学逆解优化算法，有效提升了机器人的运动平衡性与整体能效比。</p >
+          </div>
+          <div class="action-buttons">
+            <a href="view_demo1.html?demo=C" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              View Demo
+            </a>
+            <a href="load_pdf1.html?pdf=reportC" class="btn btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Read PDF
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    // 可根据 ID 继续扩展 JS 逻辑加载不同数据
+  </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成员详情 - 王鱼雅 | Design Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --accent-cyan: #00f2fe;
+      --accent-violet: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: rgba(248, 250, 252, 0.7);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 60px 0;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container { max-width: 1080px; margin: 0 auto; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      margin-bottom: 50px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .back-btn:hover { 
+      color: var(--text-main); 
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+      transform: translateX(-5px); 
+    }
+
+    .profile-header {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-bottom: 90px;
+    }
+    
+    .avatar-wrapper { 
+      position: relative; 
+      display: flex;
+      justify-content: center;
+    }
+    
+    .avatar-big {
+      width: 100%;
+      max-width: 240px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+      box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4); }
+      50% { transform: translateY(-10px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.25), 0 0 40px rgba(0, 242, 254, 0.6); }
+      100% { transform: translateY(0px); box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15), 0 0 30px rgba(0, 242, 254, 0.4); }
+    }
+
+    .info h1 { font-size: 3.2rem; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.02em; }
+    .position-tag {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .bio { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 30px; max-width: 90%; }
+
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-pill {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      transition: 0.3s;
+    }
+    .skill-pill:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
+    }
+
+    .achievements-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .achievement-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 35px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .achievement-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+      transform: translateY(-3px);
+    }
+
+    .ach-content { flex: 1; padding-right: 40px; }
+    .ach-content h3 { color: #fff; margin-bottom: 10px; font-size: 1.35rem; font-weight: 600; }
+    .ach-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .btn svg { width: 18px; height: 18px; }
+
+    @media (max-width: 860px) {
+      .profile-header { grid-template-columns: 1fr; text-align: center; gap: 40px; margin-bottom: 60px;}
+      .bio { margin: 0 auto 30px; }
+      .skills-wrap { justify-content: center; }
+      .achievement-card { flex-direction: column; text-align: left; gap: 24px; padding: 30px; align-items: flex-start;}
+      .ach-content { padding-right: 0; }
+      .action-buttons { width: 100%; }
+      .btn { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .action-buttons { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      返回团队
+    </a>
+
+    <section class="profile-header">
+      <div class="avatar-wrapper">
+        <img id="avatar" src="3.webp" alt="王鱼雅" class="avatar-big" onerror="this.src='https://ui-avatars.com/api/?name=王鱼雅&background=00f2fe&color=121212&size=300'">
+      </div>
+      
+      <div class="info">
+        <div id="position" class="position-tag">Design Manager</div>
+        <h1 id="name">王鱼雅</h1>
+        <p id="desc" class="bio">熟练掌握专业设计软件，负责产品的工业设计与交互体验优化。致力于通过视觉语言提升科技产品的温度感，实现美学与功能的完美平衡。</p>
+        
+        <div class="skills-wrap" id="skills">
+          <span class="skill-pill">UI/UX Design</span>
+          <span class="skill-pill">Industrial Design</span>
+          <span class="skill-pill">Adobe Creative Suite</span>
+          <span class="skill-pill">3D Modeling</span>
+          <span class="skill-pill">User Research</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="section">
+      <h2 class="section-title">核心成果展示 / Major Achievements</h2>
+      
+      <div class="achievements-list">
+        <div class="achievement-card">
+          <div class="ach-content">
+            <h3>作品集</h3>
+              <p>非物质文化遗产研究项目，VI、信息可视化、海报设计</p>
+            
+          </div>
+          <div class="action-buttons">
+            <a href="load_pdf3.html?pdf=reportA" class="btn btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Read PDF
+            </a>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+  </script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目文档预览 - Document Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --accent-cyan: #00f2fe;
+            --accent-violet: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.7);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 噪点纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 高级返回按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 8px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .back-btn:hover { 
+            color: var(--text-main); 
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            transform: translateX(-5px); 
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* 分段式语言切换器 (类似iOS) */
+        .lang-switch-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .lang-switch {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+        }
+        .lang-btn {
+            padding: 8px 24px;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-radius: 26px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* 预览器毛玻璃容器 */
+        .viewer-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 12px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            height: 75vh;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+            background-color: #f1f5f9; /* 加载前的底色，避免刺眼的纯白 */
+        }
+
+        /* PPTX 无预览备用样式 */
+        .pptx-viewer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            border-radius: 16px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .pptx-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--accent-cyan), #3b82f6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+        }
+
+        .pptx-icon svg { width: 40px; height: 40px; color: #fff; }
+
+        .pptx-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 0.5rem; color: #fff; }
+        .pptx-desc { color: var(--text-muted); margin-bottom: 2.5rem; }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .open-btn, .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .open-btn {
+            background: var(--text-main);
+            color: var(--bg-dark);
+        }
+        .open-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .download-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+        }
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-main);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .viewer-container { height: 65vh; padding: 8px; border-radius: 16px; }
+            .page-header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="member1.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            返回 / Back
+        </a>
+        
+        <div class="page-header">
+            <h1 id="title">文档加载中...</h1>
+            <p id="subtitle">Please wait...</p>
+        </div>
+
+        <div class="lang-switch-wrapper">
+            <div class="lang-switch">
+                <button id="btn-zh" class="lang-btn active" onclick="switchLang('zh')">中文版</button>
+                <button id="btn-en" class="lang-btn" onclick="switchLang('en')">English</button>
+            </div>
+        </div>
+
+        <div class="viewer-container">
+            <iframe id="pdfViewer" class="pdf-viewer" src="" type="application/pdf">
+                <p>您的浏览器不支持直接预览 PDF，请下载后查看。</p>
+            </iframe>
+            
+            <div id="pptxViewer" class="pptx-viewer" style="display: none;">
+                <div class="pptx-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="pptx-title" id="pptxTitle">源文件</div>
+                <div class="pptx-desc" id="pptxDesc">此文件类型无法直接预览，请选择以下操作</div>
+                <div class="action-buttons">
+                    <a href="" id="openBtn" class="open-btn" target="_blank">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        浏览器打开
+                    </a>
+                    <a href="" id="downloadBtn" class="download-btn" download>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        下载文件
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileData = {
+            reportA: {
+                title: { zh: "Unitree Go2 Air 二次开发项目", en: "Unitree Go2 Air Development Project" },
+                subtitle: { zh: "将入门级 Air 版本成功升级为 Edu 教育版", en: "Successfully upgrading Air version to Edu version" },
+                files: { zh: "1_zh.pdf", en: "1_en.pdf" },
+                fileType: "pdf"
+            },
+            reportB: {
+                title: { zh: "51单片机小车系统架构", en: "51 Microcontroller Car System" },
+                subtitle: { zh: "基于 51 内核的自主导引小车开发", en: "Autonomous Guided Vehicle based on 51 Core" },
+                files: { zh: "2_zh.pdf", en: "2_en.pdf" },
+                fileType: "pdf"
+            },
+            reportC: {
+                title: { zh: "Robo-Soul 马达机器人落地", en: "Robo-Soul Motor Robot Deployment" },
+                subtitle: { zh: "足式机器人马达控制系统技术规格", en: "Technical specs of motor control for legged robots" },
+                files: { zh: "3_zh.pdf", en: "3_en.pdf" },
+                fileType: "pdf"
+            }
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const fileKey = params.get('file') || params.get('pdf') || 'reportA'; 
+        let currentLang = 'zh';
+
+        function renderPage(lang) {
+            currentLang = lang;
+            const data = fileData[fileKey] || fileData.reportA;
+
+            // 文本更新
+            document.getElementById('title').textContent = data.title[lang];
+            document.getElementById('subtitle').textContent = data.subtitle[lang];
+
+            // 按钮状态更新
+            document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+            const filePath = data.files[lang];
+
+            if (data.fileType === 'pptx') {
+                document.getElementById('pdfViewer').style.display = 'none';
+                document.getElementById('pptxViewer').style.display = 'flex';
+                document.getElementById('pptxTitle').textContent = data.title[lang];
+                document.getElementById('openBtn').href = filePath;
+                document.getElementById('downloadBtn').href = filePath;
+                document.getElementById('pptxDesc').textContent = lang === 'zh' 
+                    ? "此文件类型无法直接预览，请选择以下操作" 
+                    : "Preview unavailable for this format. Choose an action below.";
+            } else {
+                document.getElementById('pdfViewer').style.display = 'block';
+                document.getElementById('pptxViewer').style.display = 'none';
+                
+                /* * 核心修复区：
+                 * view=FitH (Fit Horizontal) 保证PDF填满容器宽度，不会被无脑放大
+                 * view=Fit (Fit Page) 如果您发现PPT被截断，可以把 FitH 改成 Fit
+                 * navpanes=0 强制关闭左侧边栏（书签栏），防止 PDF 被挤到右侧
+                 * toolbar=1 保留顶部工具栏（打印、下载按钮）
+                 */
+                const pdfParams = '#view=FitH&navpanes=0&toolbar=1&scrollbar=1';
+                document.getElementById('pdfViewer').src = filePath + pdfParams;
+            }
+        }
+
+        function switchLang(lang) {
+            if (lang === currentLang) return;
+            // 添加一个轻微的透明度动画反馈
+            const viewer = document.getElementById('pdfViewer');
+            viewer.style.opacity = '0.5';
+            setTimeout(() => {
+                renderPage(lang);
+                viewer.style.opacity = '1';
+            }, 150);
+        }
+
+        window.onload = () => renderPage('zh');
+    </script>
+</body>
+</html>
